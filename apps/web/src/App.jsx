@@ -1,5 +1,5 @@
 import { useState } from "react";
-import EvenementCarte from "./ components / EvenementCarte ";
+import EvenementCarte from "./components/EvenementCarte";
 
 const App = () => {
   const [evenements, setEvenements] = useState([]);
@@ -28,19 +28,12 @@ const App = () => {
       </button>
 
       {evenements.map((ev) => (
-        <EvenementCarte key={ev.id} ev={ev} />
+        <EvenementCarte
+          key={ev.id}
+          ev={ev}
+          afficherDetails={true}
+        />
       ))}
-    </div>
-  );
-};
-
-const EvenementCarte = ({ ev }) => {
-  return (
-    <div>
-      <h3>{ev.titre}</h3>
-      <p>{ev.categorie}</p>
-      <p>{ev.lieu_nom}</p>
-      <p>{ev.prix} FCFA</p>
     </div>
   );
 };
