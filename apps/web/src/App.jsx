@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import EvenementCarte from "./components/EvenementCarte";
 import SearchBar from "./components/SearchBar";
+import EtatChargement from "./components/EtatChargement";
 import styles from "./App.module.css";
 
 const App = () => {
@@ -13,7 +14,6 @@ const App = () => {
     setChargement(true);
     setErreur(null);
     try {
-      //const reponse = await fetch("/evenements-faux.json");
       const reponse = await fetch("/evenements.json");
       if (!reponse.ok) {
         throw new Error(`Erreur HTTP ${reponse.status}`);
@@ -27,17 +27,14 @@ const App = () => {
     }
   };
 
-  // 1er useEffect : chargement des données
   useEffect(() => {
     charger();
   }, []);
 
-  // Filtrage
   const evenementsFiltres = evenements.filter(ev =>
     ev.titre.toLowerCase().includes(recherche.toLowerCase())
   );
 
-  // 2e useEffect : titre dynamique de l’onglet
   useEffect(() => {
     if (evenementsFiltres.length > 0) {
       document.title = `(${evenementsFiltres.length}) SenEvent`;
@@ -50,29 +47,20 @@ const App = () => {
     <div className={styles.container}>
       <h1 className={styles.titre}>SenEvent — Evenements a Dakar</h1>
 
-      {chargement && (
-        <p className={styles.message}>Chargement des evenements...</p>
-      )}
-
-      {erreur && (
-        <div className={styles.erreur}>
-          <p>Erreur : {erreur}</p>
-          <button className={styles.bouton} onClick={charger}>
-            Reessayer
-          </button>
-        </div>
-      )}
+      <EtatChargement
+        chargement={chargement}
+        erreur={erreur}
+        onReessayer={charger}
+      />
 
       {!chargement && !erreur && (
         <>
           <SearchBar recherche={recherche} onRecherche={setRecherche} />
-
           <p className={styles.compteur}>
             {evenementsFiltres.length} evenement(s) trouve(s)
           </p>
-
           {evenementsFiltres.length === 0 ? (
-            <p className={styles.message}>
+            <p className={styles.messageVide}>
               Aucun evenement ne correspond.
             </p>
           ) : (
