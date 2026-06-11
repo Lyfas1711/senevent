@@ -13,7 +13,8 @@ const App = () => {
     setChargement(true);
     setErreur(null);
     try {
-      const reponse = await fetch("/evenements-faux.json");
+      //const reponse = await fetch("/evenements-faux.json");
+      const reponse = await fetch("/evenements.json");
       if (!reponse.ok) {
         throw new Error(`Erreur HTTP ${reponse.status}`);
       }
@@ -26,13 +27,24 @@ const App = () => {
     }
   };
 
+  // 1er useEffect : chargement des données
   useEffect(() => {
     charger();
   }, []);
 
+  // Filtrage
   const evenementsFiltres = evenements.filter(ev =>
     ev.titre.toLowerCase().includes(recherche.toLowerCase())
   );
+
+  // 2e useEffect : titre dynamique de l’onglet
+  useEffect(() => {
+    if (evenementsFiltres.length > 0) {
+      document.title = `(${evenementsFiltres.length}) SenEvent`;
+    } else {
+      document.title = "SenEvent";
+    }
+  }, [evenementsFiltres.length]);
 
   return (
     <div className={styles.container}>
@@ -54,11 +66,15 @@ const App = () => {
       {!chargement && !erreur && (
         <>
           <SearchBar recherche={recherche} onRecherche={setRecherche} />
+
           <p className={styles.compteur}>
             {evenementsFiltres.length} evenement(s) trouve(s)
           </p>
+
           {evenementsFiltres.length === 0 ? (
-            <p className={styles.message}>Aucun evenement ne correspond.</p>
+            <p className={styles.message}>
+              Aucun evenement ne correspond.
+            </p>
           ) : (
             evenementsFiltres.map(ev => (
               <EvenementCarte key={ev.id} ev={ev} afficherDetails={true} />
