@@ -1,0 +1,46 @@
+/* Style général de la page */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    text-align: center;
+    margin-top: 50px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Zone de l'acteur : Par défaut, c'est Bugs Bunny */
+#actor {
+    width: 300px;
+    height: 400px;
+    margin: 0 auto 20px auto;
+    background-image: url('bugs_bunny.png'); /* Mets le nom exact de ton image Bugs Bunny */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background 0.3s ease-in-out; /* Effet de transition fluide */
+}
+
+/* Quand la classe 'mystery' est ajoutée par le JS, on passe à Daffy Duck ! */
+#actor.mystery {
+    background-image: url('daffy_duck.png'); /* Mets le nom exact de ton image Daffy Duck */
+}
+
+/* Style du bouton */
+#b1 {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#b1:hover {
+    background-color: #0056b3;
+}

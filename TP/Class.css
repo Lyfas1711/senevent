@@ -1,0 +1,13 @@
+body {
+  margin-left: 15%;
+  margin-right: 15%;
+}
+
+.mystery {
+  background-color: blue;
+  color: white;
+}
+
+.surprise {
+  font-size: 18pt;
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur de texte </title>
+  <link rel="stylesheet" href="editeur.css">
+  <script src="editeur.js" defer></script>
+</head>
+<body>
+  <h2>Mon simple editeur de text</h2>
+
+  <!-- Zone de saisie -->
+  <textarea id="input" rows="8" cols="80">
+
+  </textarea>
+
+  <!-- Zone de rendu -->
+  <div id="output" contenteditable="true"></div>
+
+  <!-- Boutons de style -->
+  <div class="controls">
+    <button onclick="formatText('italic')">Italic</button>
+    <button onclick="formatText('bold')">Gras</button>
+    <button onclick="changeFontSize('+')">A+</button>
+    <button onclick="changeFontSize('-')">A-</button>
+
+    <select onchange="changeTextColor(this.value)">
+      <option disabled selected>Couleur Texte</option>
+      <option value="red">Rouge</option>
+      <option value="blue">Bleu</option>
+      <option value="green">Vert</option>
+      <option value="black">Noir</option>
+    </select>
+
+    <select onchange="changeBgColor(this.value)">
+      <option disabled selected>Couleur de fond</option>
+      <option value="lightyellow">Jaune clair</option>
+      <option value="lightblue">Bleu clair</option>
+      <option value="white">Blanc</option>
+      <option value="lightgray">Gris clair</option>
+    </select>
+  </div>
+</body>
+</html>
