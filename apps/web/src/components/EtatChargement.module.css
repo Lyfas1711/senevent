@@ -27,3 +27,7 @@
 .bouton:hover {
   background: #c02020;
 }
+.lien {
+  text-decoration: none;
+  color: inherit;
+}
