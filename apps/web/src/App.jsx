@@ -18,7 +18,8 @@ const App = () => {
     const [chargement, setChargement] = useState(true);
     const [erreur, setErreur] = useState(null);
     const [session, setSession] = useState(null);
-    
+
+    // 1. Écoute et gestion de la session Supabase Auth
     useEffect(() => {
         const recupererSession = async () => {
             const {
@@ -43,39 +44,28 @@ const App = () => {
         };
     }, []);
 
+    // 2. Lecture (SELECT) des événements directement depuis Supabase
     const charger = async () => {
         setChargement(true);
         setErreur(null);
 
-        try {
-            const reponse = await fetch("/evenements.json");
+        const { data, error } = await supabase
+            .from("evenements")
+            .select("*")
+            .order("date_debut", { ascending: true });
 
-            if (!reponse.ok) {
-                throw new Error(
-                    `Erreur HTTP ${reponse.status}`
-                );
-            }
-
-            const data = await reponse.json();
-
+        if (error) {
+            setErreur(error.message);
+        } else {
             setEvenements(data);
-        } catch (e) {
-            setErreur(e.message);
-        } finally {
-            setChargement(false);
         }
+
+        setChargement(false);
     };
 
     useEffect(() => {
         charger();
     }, []);
-
-    const ajouterEvenement = (nouvelEvenement) => {
-        setEvenements((precedents) => [
-            nouvelEvenement,
-            ...precedents,
-        ]);
-    };
 
     return (
         <BrowserRouter>
@@ -98,7 +88,7 @@ const App = () => {
                     path="/nouveau"
                     element={
                         <NouvelEvenement
-                            onAjouter={ajouterEvenement}
+                            onSucces={charger}
                         />
                     }
                 />
@@ -108,6 +98,8 @@ const App = () => {
                     element={
                         <Detail
                             evenements={evenements}
+                            session={session}
+                            onEvenementSupprime={charger}
                         />
                     }
                 />
