@@ -1,74 +1,124 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+    BrowserRouter,
+    Routes,
+    Route,
 } from "react-router-dom";
+
+import { supabase } from "./lib/supabase";
 
 import Accueil from "./pages/Accueil";
 import NouvelEvenement from "./pages/NouvelEvenement";
 import Detail from "./pages/Detail";
+import Auth from "./pages/Auth";
 import NavBar from "./components/NavBar";
 
 const App = () => {
-  const [evenements, setEvenements] = useState([]);
-  const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState(null);
+    const [evenements, setEvenements] = useState([]);
+    const [chargement, setChargement] = useState(true);
+    const [erreur, setErreur] = useState(null);
+    const [session, setSession] = useState(null);
+    
+    useEffect(() => {
+        const recupererSession = async () => {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
 
-  const charger = async () => {
-    try {
-      const reponse = await fetch("/evenements.json");
+            setSession(session);
+        };
 
-      if (!reponse.ok) {
-        throw new Error(`Erreur HTTP ${reponse.status}`);
-      }
+        recupererSession();
 
-      const data = await reponse.json();
-      setEvenements(data);
-    } catch (e) {
-      setErreur(e.message);
-    } finally {
-      setChargement(false);
-    }
-  };
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange(
+            (_event, nouvelleSession) => {
+                setSession(nouvelleSession);
+            }
+        );
 
-  useEffect(() => {
-    charger();
-  }, []);
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
 
-  const ajouterEvenement = (nouvel) => {
-    setEvenements((precedents) => [nouvel, ...precedents]);
-  };
+    const charger = async () => {
+        setChargement(true);
+        setErreur(null);
 
-  return (
-    <BrowserRouter>
-      <NavBar />
+        try {
+            const reponse = await fetch("/evenements.json");
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Accueil
-              evenements={evenements}
-              chargement={chargement}
-              erreur={erreur}
-              onReessayer={charger}
-            />
-          }
-        />
+            if (!reponse.ok) {
+                throw new Error(
+                    `Erreur HTTP ${reponse.status}`
+                );
+            }
 
-        <Route
-          path="/nouveau"
-          element={<NouvelEvenement onAjouter={ajouterEvenement} />}
-        />
+            const data = await reponse.json();
 
-        <Route
-          path="/evenement/:id"
-          element={<Detail evenements={evenements} />}
-        />
-      </Routes>
-    </BrowserRouter>
-  );
+            setEvenements(data);
+        } catch (e) {
+            setErreur(e.message);
+        } finally {
+            setChargement(false);
+        }
+    };
+
+    useEffect(() => {
+        charger();
+    }, []);
+
+    const ajouterEvenement = (nouvelEvenement) => {
+        setEvenements((precedents) => [
+            nouvelEvenement,
+            ...precedents,
+        ]);
+    };
+
+    return (
+        <BrowserRouter>
+            <NavBar session={session} />
+
+            <Routes>
+                <Route
+                    path="/"
+                    element={
+                        <Accueil
+                            evenements={evenements}
+                            chargement={chargement}
+                            erreur={erreur}
+                            onReessayer={charger}
+                        />
+                    }
+                />
+
+                <Route
+                    path="/nouveau"
+                    element={
+                        <NouvelEvenement
+                            onAjouter={ajouterEvenement}
+                        />
+                    }
+                />
+
+                <Route
+                    path="/evenement/:id"
+                    element={
+                        <Detail
+                            evenements={evenements}
+                        />
+                    }
+                />
+
+                <Route
+                    path="/auth"
+                    element={<Auth />}
+                />
+            </Routes>
+        </BrowserRouter>
+    );
 };
 
 export default App;
