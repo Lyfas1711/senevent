@@ -1,14 +1,18 @@
 import { useState } from "react";
-import styles from "./NouvelEvenement.module.css";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import styles from "./NouvelEvenement.module.css";
 
-
-const NouvelEvenement = ({ onAjouter }) => {
+const NouvelEvenement = ({ onAjoutReussi }) => {
   const [titre, setTitre] = useState("");
   const [categorie, setCategorie] = useState("concert");
   const [lieu, setLieu] = useState("");
   const [prix, setPrix] = useState(0);
+
   const [erreurs, setErreurs] = useState({});
+  const [erreurServeur, setErreurServeur] = useState(null);
+  const [enCours, setEnCours] = useState(false);
+
   const navigate = useNavigate();
 
   const valider = () => {
@@ -29,8 +33,10 @@ const NouvelEvenement = ({ onAjouter }) => {
     return e;
   };
 
-  const soumettre = (event) => {
+  const soumettre = async (event) => {
     event.preventDefault();
+
+    setErreurServeur(null);
 
     const erreursTrouvees = valider();
 
@@ -39,24 +45,48 @@ const NouvelEvenement = ({ onAjouter }) => {
       return;
     }
 
-    const nouvel = {
-      id: Date.now(),
-      titre: titre.trim(),
-      categorie,
-      lieu_nom: lieu.trim(),
-      prix: Number(prix),
-      date_debut: new Date().toISOString(),
-      image_url: `https://placehold.co/400x250/1a3a5c/fff?text=${categorie}`,
-    };
+    setEnCours(true);
 
-    onAjouter(nouvel);
-    onAjouter(nouvel);
-    navigate("/");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setErreurServeur("Vous devez être connecté.");
+      setEnCours(false);
+      return;
+    }
+
+    const { error } = await supabase
+      .from("evenements")
+      .insert({
+        titre: titre.trim(),
+        categorie,
+        lieu_nom: lieu.trim(),
+        prix: Number(prix),
+        date_debut: new Date().toISOString(),
+        organisateur_id: user.id,
+      });
+
+    setEnCours(false);
+
+    if (error) {
+      setErreurServeur(error.message);
+    } else {
+      onAjoutReussi();
+      navigate("/");
+    }
   };
 
   return (
     <form className={styles.form} onSubmit={soumettre}>
       <h2>Ajouter un événement</h2>
+
+      {erreurServeur && (
+        <p className={styles.erreur}>
+          Erreur : {erreurServeur}
+        </p>
+      )}
 
       <label className={styles.champ}>
         Titre
@@ -106,7 +136,7 @@ const NouvelEvenement = ({ onAjouter }) => {
       </label>
 
       <label className={styles.champ}>
-        Prix (FCFA, 0 pour gratuit)
+        Prix (FCFA)
 
         <input
           type="number"
@@ -122,8 +152,12 @@ const NouvelEvenement = ({ onAjouter }) => {
         )}
       </label>
 
-      <button type="submit" className={styles.bouton}>
-        Ajouter
+      <button
+        type="submit"
+        disabled={enCours}
+        className={styles.bouton}
+      >
+        {enCours ? "Envoi..." : "Ajouter"}
       </button>
     </form>
   );
