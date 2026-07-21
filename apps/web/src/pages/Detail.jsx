@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { supprimerEvenement } from "@senevent/shared";
 import styles from "./Detail.module.css";
 import BoutonInscription from "../components/BoutonInscription";
-import { supabase } from "../lib/supabase";
 
 const Detail = ({ evenements, session }) => {
   const { id } = useParams();
@@ -31,22 +31,18 @@ const Detail = ({ evenements, session }) => {
     .toLocaleString("fr-FR");
 
   const supprimer = async () => {
-  const confirme = window.confirm(
-    "Supprimer cet événement ?"
-  );
+    const confirme = window.confirm(
+      "Supprimer cet événement ?"
+    );
 
-  if (!confirme) return;
+    if (!confirme) return;
 
-  const { error } = await supabase
-    .from("evenements")
-    .delete()
-    .eq("id", evenement.id);
-
-  if (error) {
-    alert("Erreur : " + error.message);
-  } else {
-    navigate("/");
-  }
+    try {
+      await supprimerEvenement(evenement.id);
+      navigate("/");
+    } catch (error) {
+      alert("Erreur : " + error.message);
+    }
   };
 
   return (
@@ -94,17 +90,17 @@ const Detail = ({ evenements, session }) => {
         <BoutonInscription
           evenementId={evenement.id}
           session={session}
-      />
+        />
 
-       {session &&
-        session.user.id === evenement.organisateur_id && (
-          <button
-            onClick={supprimer}
-            className={styles.supprimer}
-          >
-            Supprimer cet événement
-          </button>
-       )}
+        {session &&
+          session.user.id === evenement.organisateur_id && (
+            <button
+              onClick={supprimer}
+              className={styles.supprimer}
+            >
+              Supprimer cet événement
+            </button>
+          )}
       </dl>
     </div>
   );

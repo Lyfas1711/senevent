@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { creerEvenement, getSupabase } from "@senevent/shared";
 import styles from "./NouvelEvenement.module.css";
 
 const NouvelEvenement = ({ onAjoutReussi }) => {
@@ -47,9 +47,10 @@ const NouvelEvenement = ({ onAjoutReussi }) => {
 
     setEnCours(true);
 
+    // Récupération de l'utilisateur via le client Supabase partagé
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await getSupabase().auth.getUser();
 
     if (!user) {
       setErreurServeur("Vous devez être connecté.");
@@ -57,9 +58,9 @@ const NouvelEvenement = ({ onAjoutReussi }) => {
       return;
     }
 
-    const { error } = await supabase
-      .from("evenements")
-      .insert({
+    // Création de l'événement via la fonction partagée
+    try {
+      await creerEvenement({
         titre: titre.trim(),
         categorie,
         lieu_nom: lieu.trim(),
@@ -68,13 +69,12 @@ const NouvelEvenement = ({ onAjoutReussi }) => {
         organisateur_id: user.id,
       });
 
-    setEnCours(false);
-
-    if (error) {
-      setErreurServeur(error.message);
-    } else {
       onAjoutReussi();
       navigate("/");
+    } catch (error) {
+      setErreurServeur(error.message);
+    } finally {
+      setEnCours(false);
     }
   };
 

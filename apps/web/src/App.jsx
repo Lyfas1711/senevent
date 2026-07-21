@@ -4,9 +4,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-
-import { supabase } from "./lib/supabase";
-
+import { getEvenements, getSupabase } from "@senevent/shared";
 import Accueil from "./pages/Accueil";
 import NouvelEvenement from "./pages/NouvelEvenement";
 import Detail from "./pages/Detail";
@@ -19,46 +17,33 @@ const App = () => {
   const [erreur, setErreur] = useState(null);
   const [session, setSession] = useState(null);
 
+  // Gestion de la session d'authentification via @senevent/shared
   useEffect(() => {
-    const recupererSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    getSupabase()
+      .auth.getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+      });
 
-      setSession(session);
-    };
-
-    recupererSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      (_event, nouvelleSession) => {
-        setSession(nouvelleSession);
-      }
+    const { data: subscription } = getSupabase().auth.onAuthStateChange(
+      (_event, newSession) => setSession(newSession)
     );
 
-    return () => subscription.unsubscribe();
+    return () => subscription.subscription.unsubscribe();
   }, []);
 
+  // Chargement des événements via la fonction partagée
   const charger = async () => {
     setChargement(true);
     setErreur(null);
-
-    const { data, error } = await supabase
-      .from("evenements")
-      .select(`*,
-        profiles(nom)
-      `)
-      .order("date_debut", { ascending: true });
-
-    if (error) {
-      setErreur(error.message);
-    } else {
+    try {
+      const data = await getEvenements();
       setEvenements(data);
+    } catch (e) {
+      setErreur(e.message);
+    } finally {
+      setChargement(false);
     }
-
-    setChargement(false);
   };
 
   useEffect(() => {
@@ -68,7 +53,6 @@ const App = () => {
   return (
     <BrowserRouter>
       <NavBar session={session} />
-
       <Routes>
         <Route
           path="/"
@@ -81,7 +65,6 @@ const App = () => {
             />
           }
         />
-
         <Route
           path="/nouveau"
           element={
@@ -90,17 +73,15 @@ const App = () => {
             />
           }
         />
-
         <Route
           path="/evenement/:id"
           element={
-              <Detail
-                  evenements={evenements}
-                  session={session}
-              />
+            <Detail
+              evenements={evenements}
+              session={session}
+            />
           }
-      />
-
+        />
         <Route
           path="/auth"
           element={<Auth />}
