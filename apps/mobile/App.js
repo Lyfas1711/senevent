@@ -1,5 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { initSupabase } from "@senevent/shared";
+
+// Initialiser Supabase avec les variables EXPO_PUBLIC_
+initSupabase(
+  process.env.EXPO_PUBLIC_SUPABASE_URL,
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function App() {
   return (
