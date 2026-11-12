@@ -1,24 +1,43 @@
-import { useState, useEffect } from "react";
-import EvenementCarte from "./components/EvenementCarte";
-import SearchBar from "./components/SearchBar";
-import EtatChargement from "./components/EtatChargement";
-import styles from "./App.module.css";
+import { useEffect, useState } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import { getEvenements, getSupabase } from "@senevent/shared";
+import Accueil from "./pages/Accueil";
+import NouvelEvenement from "./pages/NouvelEvenement";
+import Detail from "./pages/Detail";
+import Auth from "./pages/Auth";
+import NavBar from "./components/NavBar";
 
 const App = () => {
   const [evenements, setEvenements] = useState([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
-  const [recherche, setRecherche] = useState("");
+  const [session, setSession] = useState(null);
 
+  // Gestion de la session d'authentification via @senevent/shared
+  useEffect(() => {
+    getSupabase()
+      .auth.getSession()
+      .then(({ data }) => {
+        setSession(data.session);
+      });
+
+    const { data: subscription } = getSupabase().auth.onAuthStateChange(
+      (_event, newSession) => setSession(newSession)
+    );
+
+    return () => subscription.subscription.unsubscribe();
+  }, []);
+
+  // Chargement des événements via la fonction partagée
   const charger = async () => {
     setChargement(true);
     setErreur(null);
     try {
-      const reponse = await fetch("/evenements.json");
-      if (!reponse.ok) {
-        throw new Error(`Erreur HTTP ${reponse.status}`);
-      }
-      const data = await reponse.json();
+      const data = await getEvenements();
       setEvenements(data);
     } catch (e) {
       setErreur(e.message);
@@ -31,46 +50,44 @@ const App = () => {
     charger();
   }, []);
 
-  const evenementsFiltres = evenements.filter(ev =>
-    ev.titre.toLowerCase().includes(recherche.toLowerCase())
-  );
-
-  useEffect(() => {
-    if (evenementsFiltres.length > 0) {
-      document.title = `(${evenementsFiltres.length}) SenEvent`;
-    } else {
-      document.title = "SenEvent";
-    }
-  }, [evenementsFiltres.length]);
-
   return (
-    <div className={styles.container}>
-      <h1 className={styles.titre}>SenEvent — Evenements a Dakar</h1>
-
-      <EtatChargement
-        chargement={chargement}
-        erreur={erreur}
-        onReessayer={charger}
-      />
-
-      {!chargement && !erreur && (
-        <>
-          <SearchBar recherche={recherche} onRecherche={setRecherche} />
-          <p className={styles.compteur}>
-            {evenementsFiltres.length} evenement(s) trouve(s)
-          </p>
-          {evenementsFiltres.length === 0 ? (
-            <p className={styles.messageVide}>
-              Aucun evenement ne correspond.
-            </p>
-          ) : (
-            evenementsFiltres.map(ev => (
-              <EvenementCarte key={ev.id} ev={ev} afficherDetails={true} />
-            ))
-          )}
-        </>
-      )}
-    </div>
+    <BrowserRouter>
+      <NavBar session={session} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Accueil
+              evenements={evenements}
+              chargement={chargement}
+              erreur={erreur}
+              onReessayer={charger}
+            />
+          }
+        />
+        <Route
+          path="/nouveau"
+          element={
+            <NouvelEvenement
+              onAjoutReussi={charger}
+            />
+          }
+        />
+        <Route
+          path="/evenement/:id"
+          element={
+            <Detail
+              evenements={evenements}
+              session={session}
+            />
+          }
+        />
+        <Route
+          path="/auth"
+          element={<Auth />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 };
 
