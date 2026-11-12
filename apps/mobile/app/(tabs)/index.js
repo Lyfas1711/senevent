@@ -1,5 +1,6 @@
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 
 import {
   StyleSheet,
@@ -16,11 +17,14 @@ export default function Evenements() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
 
-  useEffect(() => {
+  
+useFocusEffect(
+  useCallback(() => {
     const charger = async () => {
       try {
         const data = await getEvenements();
         setEvenements(data);
+        setErreur(null);
       } catch (e) {
         setErreur(e.message);
       } finally {
@@ -29,7 +33,9 @@ export default function Evenements() {
     };
 
     charger();
-  }, []);
+  }, [])
+);
+
 
   if (chargement) {
     return (

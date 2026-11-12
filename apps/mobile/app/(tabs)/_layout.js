@@ -1,6 +1,29 @@
 
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Pressable } from "react-native";
+import { useAuth } from "../../context/AuthContext";
+
+// Bouton "+" visible seulement si l'utilisateur est connecté
+function BoutonAjouter() {
+  const { session } = useAuth();
+  const router = useRouter();
+
+  if (!session) return null;
+
+  return (
+    <Pressable
+      onPress={() => router.push("/nouveau")}
+      style={{ marginRight: 16 }}
+    >
+      <Ionicons
+        name="add-circle"
+        size={28}
+        color="#fff"
+      />
+    </Pressable>
+  );
+}
 
 export default function TabsLayout() {
   return (
@@ -15,8 +38,13 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: "Événements",
+          headerRight: () => <BoutonAjouter />,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={size} color={color} />
+            <Ionicons
+              name="calendar"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -26,7 +54,11 @@ export default function TabsLayout() {
         options={{
           title: "Profil",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Ionicons
+              name="person"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
