@@ -17,6 +17,8 @@ initSupabase(
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
 );
 
+
+
 export default function App() {
   const [evenements, setEvenements] = useState([]);
   const [chargement, setChargement] = useState(true);
