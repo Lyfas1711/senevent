@@ -32,5 +32,8 @@
   },
   "engines": {
     "node": "22.x"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-linux-x64-gnu": "^1.0.2"
   }
 }
