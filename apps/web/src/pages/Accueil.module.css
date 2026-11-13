@@ -397,7 +397,6 @@
     justify-content: center;
   }
 }
-EOFcat > apps/web/src/pages/Accueil.module.css <<'EOF'
 .page {
   width: 100%;
   padding-bottom: 60px;
