@@ -1,75 +1,325 @@
 .container {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  width: min(100% - 32px, 1000px);
+  margin: 32px auto 70px;
+  color: #172b43;
 }
 
 .retour {
-  background: none;
-  border: 1px solid #1a3a5c;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  padding: 11px 17px;
+  border: 1px solid #dce4ed;
+  border-radius: 10px;
+  background: white;
   color: #1a3a5c;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 1rem;
+  transition: 0.2s ease;
 }
 
 .retour:hover {
   background: #1a3a5c;
   color: white;
+  border-color: #1a3a5c;
+  transform: translateX(-3px);
 }
 
-.titre {
-  color: #1a3a5c;
-  margin: 0.5rem 0;
+.fiche {
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e8edf3;
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(26, 58, 92, 0.09);
 }
 
-.categorie {
-  background: #ea7d2b;
-  color: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  text-transform: uppercase;
+.visuel {
+  position: relative;
+  width: 100%;
+  height: 390px;
+  overflow: hidden;
+  background: #1a3a5c;
 }
 
 .image {
+  display: block;
   width: 100%;
-  border-radius: 8px;
-  margin: 1rem 0;
+  height: 100%;
+  object-fit: cover;
 }
 
-.infos {
-  display: grid;
-  grid-template-columns: 100px 1fr;
-  gap: 0.5rem 1rem;
-}
-
-.infos dt {
-  font-weight: 600;
-  color: #555;
-}
-
-.infos dd {
-  margin: 0;
-}
-
-.prix {
-  color: #ea7d2b;
-  font-weight: bold;
-}
-.supprimer {
-  margin-top: 20px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  background: #d32f2f;
+.imageSecours {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background:
+    radial-gradient(circle at 75% 20%, rgba(234, 125, 43, 0.45), transparent 30%),
+    linear-gradient(135deg, #102a43, #1a3a5c 60%, #28577e);
   color: white;
+}
+
+.imageSecours span {
+  font-size: 76px;
+}
+
+.imageSecours p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.overlay {
+  position: absolute;
+  inset: 45% 0 0;
+  background: linear-gradient(transparent, rgba(8, 25, 43, 0.3));
+  pointer-events: none;
+}
+
+.badgeImage {
+  position: absolute;
+  left: 25px;
+  bottom: 23px;
+  padding: 9px 16px;
+  border-radius: 30px;
+  background: #ea7d2b;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.contenu {
+  padding: 34px 38px 38px;
+}
+
+.surtitre {
+  color: #ea7d2b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.titre {
+  margin: 10px 0 9px;
+  color: #1a3a5c;
+  font-size: clamp(27px, 4vw, 39px);
+  line-height: 1.18;
+  font-weight: 850;
+  letter-spacing: -1px;
+}
+
+.sousTitre {
+  margin: 0;
+  color: #718096;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.grilleInfos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.infoCarte {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #e8edf3;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.infoIcone {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  background: #edf3f9;
+  font-size: 21px;
+}
+
+.infoCarte div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoLabel {
+  color: #8a98a9;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.infoCarte strong {
+  overflow-wrap: anywhere;
+  color: #1a3a5c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.infoCarte .prix {
+  color: #ea7d2b;
+  font-size: 17px;
+}
+
+.reservation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin-top: 30px;
+  padding: 25px;
+  border-radius: 16px;
+  background: #f0f5fa;
+}
+
+.reservation h2 {
+  margin: 0 0 7px;
+  color: #1a3a5c;
+  font-size: 20px;
+}
+
+.reservation p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+.zoneSuppression {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #edf0f4;
+}
+
+.zoneSuppression p {
+  margin: 0;
+  color: #718096;
+  font-size: 13px;
+}
+
+.supprimer {
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #fff0f0;
+  color: #c62828;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .supprimer:hover {
-  background: #b71c1c;
+  background: #c62828;
+  color: white;
+}
+
+.introuvable {
+  margin: 70px auto;
+  padding: 45px 20px;
+  border: 1px solid #e8edf3;
+  border-radius: 18px;
+  background: white;
+  text-align: center;
+  box-shadow: 0 10px 35px rgba(26, 58, 92, 0.07);
+}
+
+.iconeVide {
+  font-size: 48px;
+}
+
+.introuvable h1 {
+  color: #1a3a5c;
+}
+
+.introuvable p {
+  margin-bottom: 24px;
+  color: #718096;
+}
+
+.boutonRetour {
+  display: inline-block;
+  padding: 12px 19px;
+  border-radius: 9px;
+  background: #1a3a5c;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.boutonRetour:hover {
+  background: #284f75;
+}
+
+@media (max-width: 650px) {
+  .container {
+    width: min(100% - 22px, 1000px);
+    margin-top: 20px;
+  }
+
+  .visuel {
+    height: 240px;
+  }
+
+  .contenu {
+    padding: 25px 18px;
+  }
+
+  .titre {
+    font-size: 28px;
+  }
+
+  .grilleInfos {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 23px;
+  }
+
+  .infoCarte {
+    padding: 14px;
+  }
+
+  .reservation {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .zoneSuppression {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .supprimer {
+    width: 100%;
+  }
 }

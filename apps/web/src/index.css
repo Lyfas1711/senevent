@@ -52,7 +52,10 @@
 
 body {
   margin: 0;
+  background: white;
 }
+
+
 
 #root {
   width: 1126px;
